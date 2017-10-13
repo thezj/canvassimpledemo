@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <script src="./vue.min.js"></script>
+    <script src="jscolor.js"></script>
+</head>
+
+<body>
+    <div id='app'>
+        <input type="number" v-model='pensize' />
+        <i @click='compositeOperate = "destination-out"'>destination-out</i>///
+        <i @click='compositeOperate = "source-over"'>source-over</i>/// <i @click='drawFont'>drawFont</i>///<i @click='canvasrestore'>restore</i>
+        <div id="canvasspace"></div>
+        {{reserveIndex}} ,Color: <input class="jscolor" id='jscolor' value="ab2567">
+        <div>asdasd asd
+            <div>sdfsdf</div>
+            <p>sdfsdf</p>
+            s的身份是dddddddddddddddddddddddddddddd</div>
+    </div>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                reserveIndex: 0,
+                cPushArray: [],
+                compositeOperate: 'source-over',
+                pensize: 10,
+                message: 'Hello Vue!'
+            },
+            methods: {
+                savecanvas() {
+                    this.cPushArray.push(canvas.toDataURL())
+                    this.reserveIndex = this.cPushArray.length - 2
+                },
+                canvasrestore() {
+                    var canvasPic = new Image()
+                    if (this.reserveIndex < 0) {
+                        return
+                    }
+                    canvasPic.src = this.cPushArray[this.reserveIndex--]
+                    this.cPushArray.pop()
+                    console.log(this.cPushArray)
+                    canvasPic.onload = () => {
+                        context.globalCompositeOperation = 'source-over'
+                        context.clearRect(0, 0, canvas.width, canvas.height);
+                        window.context.drawImage(canvasPic, 0, 0);
+                    }
+                    context.globalCompositeOperation = this.compositeOperate
+                },
+                drawFont() {
+                    context.globalCompositeOperation = 'source-over'
+                    //设置字体样式
+                    context.font = "30px Courier New";
+                    //设置字体填充颜色
+                    context.fillStyle = "blue";
+                    //从坐标点(50,50)开始绘制文字
+                    context.fillText('ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd', 50, 50);
+                    context.globalCompositeOperation = this.compositeOperate
+                    this.savecanvas()
+                }
+            },
+            mounted() {
+
+                document.querySelector('#canvasspace').innerHTML +=
+                    '<canvas id="canvas" width="400" height="500" style="position:absolute;border:1px solid black;left:40px;top:80px;"></canvas>'
+                var canvas = document.getElementById("canvas");
+                var context = canvas.getContext("2d");
+                let jscolor = document.querySelector('#jscolor')
+                window.canvas = canvas
+                window.context = context
+
+                let paint = false
+                let startpoint = [0, 0]
+                let endpoint = [0, 0]
+
+                //初始化保存
+                this.savecanvas()
+
+                canvas.addEventListener('touchstart', e => {
+                    let relativepoint = [e.targetTouches[0].pageX - canvas.offsetLeft, e.targetTouches[
+                            0].pageY -
+                        canvas.offsetTop
+                    ]
+                    paint = true
+                    startpoint = [relativepoint[0], relativepoint[1]]
+                    endpoint = [relativepoint[0], relativepoint[1]]
+                })
+                canvas.addEventListener('touchend', e => {
+                    paint = false
+                    var canvas = document.getElementById("canvas");
+                    var context = canvas.getContext("2d");
+                    this.savecanvas()
+                    console.log('saved')
+                })
+                canvas.addEventListener('touchmove', e => {
+                    if (!paint) {
+                        return
+                    }
+                    let relativepoint = [e.targetTouches[0].pageX - canvas.offsetLeft, e.targetTouches[
+                            0].pageY -
+                        canvas.offsetTop
+                    ]
+                    startpoint = endpoint
+                    endpoint = [relativepoint[0], relativepoint[1]]
+
+
+
+                    //设置对象起始点和终点
+                    context.beginPath()
+                    context.globalCompositeOperation = this.compositeOperate //source-over
+                    context.moveTo(startpoint[0], startpoint[1]);
+                    context.lineTo(endpoint[0], endpoint[1]);
+                    //设置样式
+                    context.lineCap = 'round'
+                    context.lineJoin = "round";
+                    context.lineWidth = this.pensize;
+                    context.strokeStyle =  '#'+jscolor.value;
+                    //绘制
+                    context.stroke();
+
+
+                })
+            }
+        })
+    </script>
+</body>
+
+</html>
