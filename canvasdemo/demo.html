@@ -1,0 +1,503 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="./vue.min.js"></script>
+    <script src="./jquery.min.js"></script>
+    <!-- <script src="jscolor.js"></script> -->
+    <script src="drag.js"></script>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+</head>
+
+<body>
+    <div id='app'>
+
+        <div class="appframe">
+            <div id="previewStraightLine" style="position:fixed;"></div>
+            <div class="appframetop">
+                <div>
+                    <img src="./x-2.png" alt="">
+                </div>
+                <div>
+                    <img src="./x-1.png" alt="">
+                </div>
+            </div>
+            <div class="appframecontent">
+                <div class="appframecontent-left">
+                    <!-- <input type="number" v-model='pensize' style='width:60px;' /> -->
+                    <!-- <div @click='i=>{compositeOperate = "destination-out";straightLine = false}'>擦</div> -->
+                    <!-- <div @click='i=>{compositeOperate = "source-over";straightLine = false}'>画</div> -->
+                    <!-- <div @click='i=>{compositeOperate = "source-over";straightLine = true}'>直线</div> -->
+                    <!-- <div @click='drawFont'>drawFont</div> -->
+                    <!-- <div @click='canvasrestore'>撤销</div> -->
+                    <!-- <div>
+                        <input class="jscolor" id='jscolor' value="ab2567" style='width:60px;'>
+                    </div> -->
+                    <!-- <div>reserve{{reserveIndex}}</div> -->
+                    <!-- <div>store{{cPushArray.length}}</div> -->
+                    <div style="color:red">{{canvasstatus}}</div>
+                    <div>
+                        {{scrollnum}}%
+                        <input style="transform: rotate(90deg);margin: 40px 0 70px -9px;" v-model='scrollnum' @change='questionscroll' type="range"
+                            name="points" min="1" max="100" />
+                    </div>
+                    <!-- <div @click='increaseCanvas'>加高</div> -->
+                </div>
+                <div class="appframecontent-right">
+                    <!-- 功能选择 -->
+                    <div class="canvastool">
+                        <div class="pencolor">
+                            <div style="background:red" @click='pencolor = "red"'></div>
+                            <div style="background:green" @click='pencolor = "green"'></div>
+                            <div style="background:yellow" @click='pencolor = "yellow"'></div>
+                        </div>
+                        <div class="pensize">
+                            <div style='font-size:12px;' @click='i=>{compositeOperate = "source-over";straightLine = false;pensize = 2}'>
+                                <i class="fa fa-pencil"></i>
+                            </div>
+                            <div style='font-size:18px;' @click='i=>{compositeOperate = "source-over";straightLine = false;pensize = 4}'>
+                                <i class="fa fa-pencil"></i>
+                            </div>
+                            <div style='font-size:24px;' @click='i=>{compositeOperate = "source-over";straightLine = false;pensize = 8}'>
+                                <i class="fa fa-pencil"></i>
+                            </div>
+                        </div>
+                        <div class="pencolor">
+                            <div @click='i=>{compositeOperate = "destination-out";straightLine = false;pensize = 24}'>
+                                <i class="fa fa-eraser"></i>
+                            </div>
+                            <div @click='i=>{compositeOperate = "source-over";straightLine = true}'>
+                                <i class="fa fa-minus"></i>
+                            </div>
+                            <div @click='increaseCanvas'>
+                                <i class="fa fa-plus"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 功能选择 -->
+                    <!-- 绘图功能演示 -->
+                    <div class="questioncanvas" id="canvasspace">
+                        <div id="main_content" class="js_selection_area">
+
+                            <!--mainContent begin-->
+                            <p>文章来源：澎湃新闻网</p>
+                            <p>文章作者：刘博洋/中国科学院国家天文台</p>
+                            <p>南京紫金山天文台：北京时间下周一晚10点，将会与NASA联合发布重大消息。</p>
+                            <p>欧洲南方天文台：北京时间下周一晚10点，将会发布重大消息。</p>
+                            <p>清华大学LIGO 工作组：北京时间下周二上午，将会发布重大消息。</p>
+                            <p>澳大利亚OzGrav 团队：北京时间下周二上午，将会发布重大消息。</p>
+                            <p>据估计，全球还有数十家其他天文机构准备同时发布重大消息。</p>
+
+                            <p>这是要干嘛？？？</p>
+                            <p>天文圈里已经沸腾了。疯传。所有人都在议论这件事。</p>
+                            <p>目测周一大新闻出炉后，会掀起不亚于第一次引力波事件时候的舆论巨浪。</p>
+                            <p>瑟瑟发抖。</p>
+                            <!--mainContent end-->
+
+                        </div>
+                        <!-- 绘图功能演示 -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <script>
+            var app = new Vue({
+                el: '#app',
+                data: {
+                    //初始化笔记
+                    notedata: "data:image/png;base64,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",
+                    reserveIndex: 0,
+                    cPushArray: [],
+                    compositeOperate: 'source-over',
+                    pensize: 2,
+                    message: 'Hello Vue!',
+                    canvasstatus: '等待数据加载完整',
+                    scrollnum: 0,
+                    //直线
+                    straightLine: false,
+                    pencolor: 'red'
+                },
+                methods: {
+
+                    //加高canvas
+                    increaseCanvas() {
+                        this.savecanvas()
+                        let questiondom = $('#main_content')
+                        questiondom.height(questiondom.height() + 500)
+                        let questionspacedom = document.querySelector('#canvasspace')
+                        questionspacedom.scrollTop = questionspacedom.scrollTop + 500
+                        this.initialcanvas('increase')
+                    },
+                    //滚动题干画图区域
+                    questionscroll() {
+                        let questiondom = document.querySelector('#canvasspace')
+                        questiondom.scrollTop = (questiondom.scrollHeight - questiondom.offsetHeight + 4) * (
+                            this.scrollnum / 100)
+                        if (this.scrollnum == 1) {
+                            questiondom.scrollTop = 0
+                        }
+                    },
+                    savecanvas() {
+                        // this.cPushArray.push(canvas.toDataURL())
+                        // this.reserveIndex = this.cPushArray.length - 2
+                        this.notedata = canvas.toDataURL()
+                    },
+                    //撤销
+                    canvasrestore(fn) {
+                        var canvasPic = new Image()
+                        if (this.reserveIndex < 0) {
+                            return
+                        }
+                        canvasPic.src = this.cPushArray[this.reserveIndex--]
+                        this.cPushArray.pop()
+                        canvasPic.onload = () => {
+                            context.globalCompositeOperation = 'source-over'
+                            context.clearRect(0, 0, canvas.width, canvas.height);
+                            window.context.drawImage(canvasPic, 0, 0);
+                            if (fn instanceof Function) {
+                                fn()
+                            }
+                        }
+                        context.globalCompositeOperation = this.compositeOperate
+                    },
+                    drawFont() {
+                        context.globalCompositeOperation = 'source-over'
+                        //设置字体样式
+                        context.font = "30px Courier New";
+                        //设置字体填充颜色
+                        context.fillStyle = "blue";
+                        //从坐标点(50,50)开始绘制文字
+                        context.fillText('ddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd', 50,
+                            50);
+                        context.globalCompositeOperation = this.compositeOperate
+                        // this.savecanvas()
+                    },
+                    initialcanvas(IsIncrease) {
+                        $('#canvas').remove()
+                        let previewStraightLineDom = $('#previewStraightLine')
+                        this.canvasstatus = '开始加载canvas'
+                        let excursionx = $('#canvasspace').offset().left + 2
+                        let excursiony = $('#canvasspace').offset().top
+                        let questionHeight = document.querySelector('#main_content').offsetHeight
+                        document.querySelector('#canvasspace').innerHTML +=
+                            `<canvas id="canvas" width="${894}" height="${questionHeight}px" style="box-sizing:border-box;position:absolute;border:1px solid black;left:0;top:0;z-index:2"></canvas>`
+                        var canvas = document.getElementById("canvas");
+                        var context = canvas.getContext("2d");
+                        let jscolor = document.querySelector('#jscolor')
+                        window.canvas = canvas
+                        window.context = context
+
+                        let paint = false
+                        let startpoint = [0, 0]
+                        let endpoint = [0, 0]
+                        let pagePoint = [0, 0]
+
+                        this.canvasstatus = '开始加载图像数据'
+                        if (!window.firstDraw) {
+                            var canvasPic = new Image()
+                            canvasPic.src = this.notedata
+                            canvasPic.onload = () => {
+                                context.globalCompositeOperation = 'source-over'
+                                context.clearRect(0, 0, canvas.width, canvas.height);
+                                window.context.drawImage(canvasPic, 0, 0);
+                                //初始化保存
+                                // this.savecanvas()
+                                window.firstDraw = true
+                                this.canvasstatus = 'ok'
+
+                            }
+                            context.globalCompositeOperation = this.compositeOperate
+                        }
+
+                        if (IsIncrease === 'increase') {
+                            var canvasPic = new Image()
+                            canvasPic.src = this.notedata
+                            canvasPic.onload = () => {
+                                context.globalCompositeOperation = 'source-over'
+                                context.clearRect(0, 0, canvas.width, canvas.height);
+                                window.context.drawImage(canvasPic, 0, 0);
+                                this.canvasstatus = 'ok'
+                            }
+                            context.globalCompositeOperation = this.compositeOperate
+                        }
+
+
+
+                        canvas.addEventListener('touchstart', e => {
+
+                            let canvasscrollTOP = document.querySelector('#canvasspace').scrollTop
+
+                            pagePoint = [e.targetTouches[0].pageX, e.targetTouches[0].pageY]
+
+                            let relativepoint = [e.targetTouches[0].pageX - excursionx, e.targetTouches[
+                                    0].pageY -
+                                excursiony + canvasscrollTOP
+                            ]
+                            paint = true
+                            startpoint = [relativepoint[0], relativepoint[1]]
+                            endpoint = [relativepoint[0], relativepoint[1]]
+
+
+                            if (this.straightLine) {
+                                previewStraightLineDom.css({
+                                    'position': 'fixed',
+                                    'z-index': 3,
+                                    'border-top': '2px dotted gray',
+                                    'height': '0px',
+                                    'width': '0px',
+                                    'left': e.targetTouches[0].pageX,
+                                    'top': e.targetTouches[0].pageY
+                                })
+                            }
+
+                        })
+
+
+                        canvas.addEventListener('mousedown', e => {
+
+                            let canvasscrollTOP = document.querySelector('#canvasspace').scrollTop
+
+                            pagePoint = [e.pageX, e.pageY]
+                            let relativepoint = [e.offsetX, e.offsetY]
+                            paint = true
+                            startpoint = [relativepoint[0], relativepoint[1]]
+                            endpoint = [relativepoint[0], relativepoint[1]]
+                            if (this.straightLine) {
+                                previewStraightLineDom.css({
+                                    'position': 'fixed',
+                                    'z-index': 3,
+                                    'border-top': '2px dotted gray',
+                                    'height': '0px',
+                                    'width': '0px',
+                                    'left': e.pageX,
+                                    'top': e.pageY
+                                })
+                            }
+
+                        })
+
+
+
+
+                        canvas.addEventListener('touchend', e => {
+                            paint = false
+                            var canvas = document.getElementById("canvas");
+                            var context = canvas.getContext("2d");
+                            if (this.straightLine) {
+                                context.stroke();
+                            }
+                            // this.savecanvas()
+
+                            previewStraightLineDom.css({
+                                'width': '0',
+                            })
+
+                        })
+
+                        canvas.addEventListener('mouseup', e => {
+                            paint = false
+                            var canvas = document.getElementById("canvas");
+                            var context = canvas.getContext("2d");
+                            if (this.straightLine) {
+                                context.stroke();
+                            }
+                            // this.savecanvas()
+                            previewStraightLineDom.css({
+                                'width': '0',
+                            })
+                        })
+
+
+                        canvas.addEventListener('touchmove', e => {
+                            if (!paint) {
+                                return
+                            }
+                            let newPagePoint = [e.targetTouches[0].pageX, e.targetTouches[0].pageY]
+                            let canvasscrollTOP = document.querySelector('#canvasspace').scrollTop
+                            let relativepoint = [e.targetTouches[0].pageX - excursionx, e.targetTouches[
+                                    0].pageY -
+                                excursiony + canvasscrollTOP
+                            ]
+                            if (this.straightLine) {
+                                //pass
+                            } else {
+                                startpoint = endpoint
+                            }
+                            endpoint = [relativepoint[0], relativepoint[1]]
+                            //设置对象起始点和终点
+                            context.beginPath()
+                            context.globalCompositeOperation = this.compositeOperate //source-over
+                            context.moveTo(startpoint[0], startpoint[1]);
+                            context.lineTo(endpoint[0], endpoint[1]);
+                            //设置样式
+                            context.lineCap = 'round'
+                            context.lineJoin = "round";
+                            context.lineWidth = this.pensize;
+                            context.strokeStyle = this.pencolor;
+                            //绘制
+
+                            if (this.straightLine) {
+                                let sideA = newPagePoint[0] - pagePoint[0]
+                                let sideB = newPagePoint[1] - pagePoint[1]
+                                let sideC = Math.sqrt(sideA * sideA + sideB * sideB)
+                                let anglex = this.getAngle(pagePoint[0], pagePoint[1], newPagePoint[0],
+                                    newPagePoint[1])
+                                previewStraightLineDom.css({
+                                    'width': sideC + 'px',
+                                    'transform-origin': '0% 0%',
+                                    'transform': 'rotate(' + anglex + 'deg)'
+                                })
+
+                            } else {
+                                context.stroke();
+                            }
+
+
+                        })
+                        canvas.addEventListener('mousemove', e => {
+                            if (!paint) {
+                                return
+                            }
+                            let newPagePoint = [e.pageX, e.pageY]
+                            let canvasscrollTOP = document.querySelector('#canvasspace').scrollTop
+                            let relativepoint = [e.offsetX, e.offsetY]
+                            if (this.straightLine) {
+                                //pass
+                            } else {
+                                startpoint = endpoint
+                            }
+                            endpoint = [relativepoint[0], relativepoint[1]]
+                            //设置对象起始点和终点
+                            context.beginPath()
+                            context.globalCompositeOperation = this.compositeOperate //source-over
+                            context.moveTo(startpoint[0], startpoint[1]);
+                            context.lineTo(endpoint[0], endpoint[1]);
+                            //设置样式
+                            context.lineCap = 'round'
+                            context.lineJoin = "round";
+                            context.lineWidth = this.pensize;
+                            context.strokeStyle = this.pencolor;
+                            //绘制
+
+                            if (this.straightLine) {
+                                let sideA = newPagePoint[0] - pagePoint[0]
+                                let sideB = newPagePoint[1] - pagePoint[1]
+                                let sideC = Math.sqrt(sideA * sideA + sideB * sideB)
+                                let anglex = this.getAngle(pagePoint[0], pagePoint[1], newPagePoint[0],
+                                    newPagePoint[1])
+                                previewStraightLineDom.css({
+                                    'width': sideC - 5 + 'px',
+                                    'transform-origin': '0% 0%',
+                                    'transform': 'rotate(' + anglex + 'deg)'
+                                })
+
+                            } else {
+                                context.stroke();
+                            }
+
+
+                        })
+                    },
+                    //获取角度
+                    getAngle(px, py, mx, my) { //获得人物中心和鼠标坐标连线，与y轴正半轴之间的夹角
+                        var x = Math.abs(px - mx);
+                        var y = Math.abs(py - my);
+                        var z = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+                        var cos = y / z;
+                        var radina = Math.acos(cos); //用反三角函数求弧度
+                        var angle = Math.floor(180 / (Math.PI / radina)); //将弧度转换成角度
+
+                        if (mx > px && my > py) { //鼠标在第四象限
+                            angle = 180 - angle;
+                        }
+
+                        if (mx == px && my > py) { //鼠标在y轴负方向上
+                            angle = 180;
+                        }
+
+                        if (mx > px && my == py) { //鼠标在x轴正方向上
+                            angle = 90;
+                        }
+
+                        if (mx < px && my > py) { //鼠标在第三象限
+                            angle = 180 + angle;
+                        }
+
+                        if (mx < px && my == py) { //鼠标在x轴负方向
+                            angle = 270;
+                        }
+
+                        if (mx < px && my < py) { //鼠标在第二象限
+                            angle = 360 - angle;
+                        }
+
+                        return angle - 90;
+                    }
+                },
+                mounted() {
+                    //阻止问题区域滚动
+                    $('#canvasspace').on('touchmove', function (event) {
+                        event.preventDefault();
+                    });
+
+
+                    //问题加载好后开始加载canvas
+                    setTimeout(this.initialcanvas, 500)
+
+                    $('.canvastool').myDrag({
+                        parent: '.appframecontent-right', //定义拖动不能超出的外框,拖动范围
+                        randomPosition: false, //初始化随机位置
+                        direction: 'all', //方向
+                        handler: false, //把手
+                        dragStart: function (x, y) {}, //拖动开始 x,y为当前坐标
+                        dragEnd: function (x, y) {}, //拖动停止 x,y为当前坐标
+                        dragMove: function (x, y) {} //拖动进行中 x,y为当前坐标
+                    });
+
+                    let canvastool = document.querySelector('.canvastool')
+                    let appframe = document.querySelector('.appframe')
+                    let movetoollock = false
+                    let movetoolstart = []
+                    let movetoolend = []
+
+                    canvastool.addEventListener('touchstart', e => {
+                        let point = [e.targetTouches[0].pageX, e.targetTouches[0].pageY]
+                        movetoolstart = point
+                        movetoolend = point
+                        movetoollock = true
+                    })
+                    appframe.addEventListener('touchend', e => {
+                        let point = [e.changedTouches[0].pageX, e.changedTouches[0].pageY]
+                        movetoollock = false
+
+                    })
+                    appframe.addEventListener('touchmove', e => {
+                        if (movetoollock === true) {
+                            let point = [e.targetTouches[0].pageX, e.targetTouches[0].pageY]
+                            movetoolstart = movetoolend
+                            movetoolend = point
+                            let oldleft = canvastool.offsetLeft
+                            let oldtop = canvastool.offsetTop
+
+
+                            console.log(movetoolend[0] - movetoolstart[0], oldleft)
+                            $(canvastool).css({
+                                'left': oldleft + (movetoolend[0] - movetoolstart[0]),
+                                'top': oldtop + (movetoolend[1] - movetoolstart[1])
+                            })
+                        }
+                    })
+
+                }
+            })
+        </script>
+
+</body>
+
+</html>
