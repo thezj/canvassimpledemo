@@ -84,7 +84,7 @@
                             <div @click='i=>{compositeOperate = "destination-out";straightLine = false;pensize = 24}'>
                                 <i class="fa fa-eraser"></i>
                             </div>
-                            <div @click='i=>{compositeOperate = "source-over";straightLine = true}'>
+                            <div @click='i=>{compositeOperate = "source-over";straightLine = true;pensize = 4}'>
                                 <i class="fa fa-minus"></i>
                             </div>
                             <div @click='increaseCanvas'>
@@ -92,6 +92,7 @@
                             </div>
                             <img src="" alt="">
                         </div>
+                        <div class="pencolor">{{pensize}},{{pencolor}},{{straightLine}}<br>{{compositeOperate}}</div>
                     </div>
                     <!-- 功能选择 -->
                     <!-- 绘图功能演示 -->
@@ -124,6 +125,8 @@
         var app = new Vue({
             el: '#app',
             data: {
+                //画笔状态
+                penstatus: '',
                 //影藏显示key
                 showkeys: {
                     key1: true,
@@ -206,6 +209,12 @@
                     // this.savecanvas()
                 },
                 initialcanvas(IsIncrease) {
+                    let isMobile = false
+                    if (window.navigator.appVersion.indexOf('iPad') > -1 | window.navigator.appVersion.indexOf(
+                            'iPhone') > -1 | window.navigator.appVersion.indexOf('Android') > -1) {
+                        isMobile = true
+                    }
+                    
                     $('#canvas').remove()
                     let previewStraightLineDom = $('#previewStraightLine')
                     this.canvasstatus = '开始加载canvas'
@@ -258,8 +267,11 @@
 
 
                     canvas.addEventListener('touchstart', e => {
-
+                        window.isTouchMode = true
                         window.isdotted = true
+
+                        console.log('touchstart',window.isTouchMode)
+                        
 
                         let canvasscrollTOP = document.querySelector('#canvasspace').scrollTop
 
@@ -291,6 +303,15 @@
 
                     canvas.addEventListener('mousedown', e => {
 
+                        window.mousedownfirst = true
+
+                        if(window.isTouchMode){
+                            return
+                        }
+                        
+                            console.log('mousedown',window.isTouchMode)
+                       
+
                         window.isdotted = true
 
                         let canvasscrollTOP = document.querySelector('#canvasspace').scrollTop
@@ -300,6 +321,9 @@
                         paint = true
                         startpoint = [relativepoint[0], relativepoint[1]]
                         endpoint = [relativepoint[0], relativepoint[1]]
+
+                        console.log('mousedown',startpoint,endpoint)
+                        
                         if (this.straightLine) {
                             previewStraightLineDom.css({
                                 'position': 'fixed',
@@ -318,9 +342,12 @@
 
 
                     canvas.addEventListener('touchend', e => {
-
-
+                        
+                        setTimeout(i=>{window.isTouchMode = false;console.log('touchend',window.isTouchMode)},10)
                         paint = false
+
+                        
+                        
                         var canvas = document.getElementById("canvas");
                         var context = canvas.getContext("2d");
                         if (this.straightLine) {
@@ -344,6 +371,12 @@
                     })
 
                     canvas.addEventListener('mouseup', e => {
+                        if(window.isTouchMode){
+                            return
+                        }
+                        
+                        console.log('mouseup',window.isTouchMode)
+
                         paint = false
                         var canvas = document.getElementById("canvas");
                         var context = canvas.getContext("2d");
@@ -366,11 +399,14 @@
 
 
                     canvas.addEventListener('touchmove', e => {
-
+                        
 
                         if (!paint) {
                             return
                         }
+
+                        console.log('touchmove',Math.random())
+                        
                         window.isdotted = false
 
                         let newPagePoint = [e.targetTouches[0].pageX, e.targetTouches[0].pageY]
@@ -416,9 +452,25 @@
 
                     })
                     canvas.addEventListener('mousemove', e => {
+                        
+                        if(window.isTouchMode){
+                            return
+                        }
+                        
                         if (!paint) {
                             return
                         }
+
+                        if(window.mousedownfirst){
+                            window.mousedownfirst = false
+                            return
+                        }
+
+                        
+                        console.log('mousemove',Math.random())
+
+                        console.log([e.offsetX, e.offsetY])
+                        
                         window.isdotted = false
 
                         let newPagePoint = [e.pageX, e.pageY]
@@ -439,6 +491,7 @@
                         context.lineCap = 'round'
                         context.lineJoin = "round";
                         context.lineWidth = this.pensize;
+                        context.fillStyle = this.pencolor;
                         context.strokeStyle = this.pencolor;
                         //绘制
 

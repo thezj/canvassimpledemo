@@ -1,0 +1,37 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <script src="pixi.min.js"></script>
+</head>
+
+<body style="background:gray">
+    <script type="text/javascript">
+        var app = new PIXI.Application(1800, 600, {
+            transparent: true
+        });
+        document.body.appendChild(app.view);
+
+        var container = new PIXI.Container();
+
+        app.stage.addChild(container);
+        container.width = 1000
+        container.height = 1000
+        container.x = 0
+        container.y = 0
+        var texture = PIXI.Texture.fromImage('x1.jpg');
+        var bunny = new PIXI.Sprite(texture);
+        container.addChild(bunny);
+        container.interactive = true;
+        container.on('pointerdown', onClick);
+
+        function onClick(e) {
+            console.log(e)
+        }
+    </script>
+</body>
+
+</html>
