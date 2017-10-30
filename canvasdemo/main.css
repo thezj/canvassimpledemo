@@ -42,16 +42,18 @@
     box-sizing: border-box;
     overflow: hidden;
     overflow-y: auto;
+    background: rgb(199, 202, 207);
 }
 
 .questioncanvas {
     width: 900px;
-    border: 2px solid #e6e6e6;
+    /* border: 2px solid #e6e6e6; */
+    box-shadow: 0px 0px 16px 0px grey;
     background: white;
     box-sizing: border-box;
     margin: auto;
-    height: 90%;
-    margin-top: 4%;
+    height: 97%;
+    margin-top: 1%;
     overflow: hidden;
     position: relative;
 }
@@ -259,15 +261,15 @@
     position: absolute;
     top: 25%;
     right: 50%;
-    margin-right: -465px;
+    margin-right: -468px;
     width: 5px;
     background: #e6e6e6;
 }
 
 .sliderdot {
-    height: 15px;
+    height: 25px;
     width: 15px;
-    border-radius: 50%;
+    border-radius: 6px;
     position: absolute;
     top: 0%;
     background: #38b48b;
