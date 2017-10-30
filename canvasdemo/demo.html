@@ -2,8 +2,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <!-- <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" /> -->
+    <!-- <meta http-equiv="X-UA-Compatible" content="ie=edge"> -->
     <title>Document</title>
     <script src="./vue.min.js"></script>
     <script src="./jquery.min.js"></script>
@@ -174,8 +174,16 @@
                 pencolor: '#000000'
             },
             methods: {
+
+
+                androidsave() {
+                    this.savecanvas()
+                    window.androidface.gethtmlcancas(this.notedata)
+                },
+
+
                 //其他功能
-                dosomething(num){
+                dosomething(num) {
                     console.log(num)
                 },
                 //选择橡皮擦
@@ -344,7 +352,7 @@
                     let excursiony = $('#canvasspace').offset().top
                     let questionHeight = document.querySelector('#main_content').offsetHeight
                     document.querySelector('#canvasspace').appendChild($(
-                        `<canvas id="canvas" width="${899}" height="${questionHeight}px" style="box-sizing:border-box;position:absolute;left:0;top:0;z-index:2"></canvas>`
+                        `<canvas id="canvas" width="${849}" height="${questionHeight}px" style="box-sizing:border-box;position:absolute;left:0;top:0;z-index:2"></canvas>`
                     )[0])
                     var canvas = document.getElementById("canvas");
                     var context = canvas.getContext("2d");
@@ -496,7 +504,7 @@
                             context.fill();
                         }
 
-                        this.savecanvas()
+                        // this.savecanvas()
 
 
                     })
@@ -532,7 +540,7 @@
                             }
                             context.fill();
                         }
-                        this.savecanvas()
+                        // this.savecanvas()
                     })
 
                     canvas.addEventListener('touchmove', e => {
@@ -593,7 +601,7 @@
                             context.stroke();
                         }
 
-                        this.savecanvas()
+                        // this.savecanvas()
 
 
                     })
@@ -657,7 +665,7 @@
                             context.stroke();
                         }
 
-                        this.savecanvas()
+                        // this.savecanvas()
 
 
                     })

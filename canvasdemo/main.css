@@ -46,7 +46,7 @@
 }
 
 .questioncanvas {
-    width: 900px;
+    width: 850px;
     /* border: 2px solid #e6e6e6; */
     box-shadow: 0px 0px 16px 0px grey;
     background: white;
@@ -257,9 +257,9 @@
 }
 
 .sliderbar {
-    height: 50%;
+    height: 36%;
     position: absolute;
-    top: 25%;
+    top: 33%;
     right: 50%;
     margin-right: -468px;
     width: 5px;
