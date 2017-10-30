@@ -55,9 +55,12 @@
                 </div>
                 <div class="appframecontent-right">
                     <!-- 滚动内容 -->
+                    <div class="sliderbar">
+                        <div class="sliderdot"></div>
+                    </div>
+                    <!-- 滚动内容 -->
 
-                 
-                    <input class='scrollquestion' v-model='scrollnum' @change='questionscroll' type="range" name="points" min="1" max="100" />
+
                     <!-- 功能选择 -->
                     <div class="canvastool">
                         <div class="controlarrows">
@@ -79,8 +82,8 @@
                                 <i v-for='i in 6' @click='choosepensize(i)'></i>
                             </div>
                         </div>
-                        <div v-if='compositeOperate !== "source-over"' class="controlitem item-1" @click='showchoosepensizecolor = true;'></div>
-                        <div v-else class="controlitem item-1-on" @click='showchoosepensizecolor = true;'></div>
+                        <div v-if='compositeOperate !== "source-over"' class="controlitem item-1" @click='showchoosepensizecolor = !showchoosepensizecolor;'></div>
+                        <div v-else class="controlitem item-1-on" @click='showchoosepensizecolor = !showchoosepensizecolor;'></div>
                         <div v-if='straightLine == false' class="controlitem item-2" @click='i=>{compositeOperate = "source-over";straightLine = !straightLine;}'></div>
                         <div v-else class="controlitem item-2-on" @click='i=>{compositeOperate = "source-over";straightLine = !straightLine;}'></div>
                         <div v-if='compositeOperate == "source-over"' class="controlitem item-3" @click='chooseeraser'></div>
@@ -88,9 +91,9 @@
                         <!-- <div class="controlitem item-4"></div> -->
                         <!-- <div class="controlitem item-5"></div> -->
                         <div class="controlitem item-9" @click='increaseCanvas'></div>
-                        <div class="controlitem item-6"></div>
-                        <div class="controlitem item-7"></div>
-                        <div class="controlitem item-8"></div>
+                        <div class="controlitem item-6" @click='dosomething(1)'></div>
+                        <div class="controlitem item-7" @click='dosomething(2)'></div>
+                        <div class="controlitem item-8" @click='dosomething(3)'></div>
 
                         <!-- <div class="pencolor">
                             <div style="background:red" @click='pencolor = "red"'></div>
@@ -171,6 +174,10 @@
                 pencolor: '#000000'
             },
             methods: {
+                //其他功能
+                dosomething(num){
+                    console.log(num)
+                },
                 //选择橡皮擦
                 chooseeraser() {
                     with(this) {
@@ -265,8 +272,16 @@
                     let questiondom = $('#main_content')
                     questiondom.height(questiondom.height() + 500)
                     let questionspacedom = document.querySelector('#canvasspace')
-                    questionspacedom.scrollTop = questionspacedom.scrollTop + 500
+                    // questionspacedom.scrollTop = questionspacedom.scrollTop + 500
                     this.initialcanvas('increase')
+                    let newscrolltopscale = Math.ceil((document.querySelector('#canvasspace').scrollTop / (
+                        document.querySelector(
+                            '#main_content').offsetHeight - document.querySelector('#canvasspace').offsetHeight
+                    )) * 100)
+
+                    document.querySelector('.sliderdot').style.top = newscrolltopscale + '%'
+
+
                 },
                 //滚动题干画图区域
                 questionscroll() {
@@ -689,6 +704,43 @@
                 }
             },
             mounted() {
+
+                let sidertouch = false
+                let sideroldpagey = 0;
+                let maxslidertop = $('.sliderbar').height() - 5
+                //滚动内容
+                $('.sliderdot').on('touchstart', e => {
+                    sidertouch = true
+                    sideroldpagey = e.targetTouches[0].pageY
+                })
+                $('.sliderdot').on('touchend', e => {
+                    sidertouch = false
+                })
+                $('.sliderdot').on('touchmove', e => {
+                    if (sidertouch) {
+                        let gap = e.targetTouches[0].pageY - sideroldpagey
+                        let oldoffsettop = e.target.offsetTop
+                        let newoffsettop = oldoffsettop + gap
+
+                        if (newoffsettop <= -5 || newoffsettop >= maxslidertop) {
+                            return
+                        }
+                        $('.sliderdot').css({
+                            'top': newoffsettop
+                        })
+                        if (newoffsettop <= 5) {
+                            this.scrollnum = 0;
+                        } else {
+                            this.scrollnum = Math.ceil((newoffsettop / maxslidertop) * 100)
+                        }
+                        if (this.scrollnum > 96) {
+                            this.scrollnum = 100
+                        }
+                        sideroldpagey = e.targetTouches[0].pageY
+                        this.questionscroll()
+                    }
+                })
+
 
 
                 /*

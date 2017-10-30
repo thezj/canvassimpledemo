@@ -247,10 +247,31 @@
 .item-9 {
     background-image: url('./notecontrol_22.png')
 }
+
 .scrollquestion {
     position: absolute;
     right: 160px;
-    top: 5%;
+    top: 2%;
+}
+
+.sliderbar {
+    height: 50%;
+    position: absolute;
+    top: 25%;
+    right: 50%;
+    margin-right: -465px;
+    width: 5px;
+    background: #e6e6e6;
+}
+
+.sliderdot {
+    height: 15px;
+    width: 15px;
+    border-radius: 50%;
+    position: absolute;
+    top: 0%;
+    background: #38b48b;
+    left: -5px;
 }
 
 .pensize,
