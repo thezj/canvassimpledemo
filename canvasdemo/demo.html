@@ -82,6 +82,12 @@
                                 <i v-for='i in 6' @click='choosepensize(i)'></i>
                             </div>
                         </div>
+
+                        <div class="noteblock" v-if='noticevisible'>
+                            <textarea name="" v-model='noticetxt' id="" cols="30" rows="10" style="margin: 0px; width: 201px; height: 153px;"></textarea>
+                        </div>
+
+
                         <div v-if='compositeOperate !== "source-over"' class="controlitem item-1" @click='showchoosepensizecolor = !showchoosepensizecolor;'></div>
                         <div v-else class="controlitem item-1-on" @click='showchoosepensizecolor = !showchoosepensizecolor;'></div>
                         <div v-if='straightLine == false' class="controlitem item-2" @click='i=>{compositeOperate = "source-over";straightLine = !straightLine;}'></div>
@@ -171,7 +177,10 @@
                 scrollnum: 0,
                 //直线
                 straightLine: false,
-                pencolor: '#000000'
+                pencolor: '#000000',
+                noticevisible: false,
+                noticetxt:''
+
             },
             methods: {
 
@@ -184,7 +193,11 @@
 
                 //其他功能
                 dosomething(num) {
-                    console.log(num)
+                    switch (num) {
+                        case 1:
+                            this.noticevisible = !this.noticevisible
+                            break;
+                    }
                 },
                 //选择橡皮擦
                 chooseeraser() {

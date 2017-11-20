@@ -91,7 +91,17 @@
     background: white;
     position: absolute;
     left: 52px;
-    top: 1px;
+    top: 181px;
+    padding: 12px;
+    width: 200px;
+    box-shadow: 0px 0px 10px 0px #dedede;
+}
+
+.noteblock {
+    background: white;
+    position: absolute;
+    left: 52px;
+    top: 181px;
     padding: 12px;
     width: 200px;
     box-shadow: 0px 0px 10px 0px #dedede;
