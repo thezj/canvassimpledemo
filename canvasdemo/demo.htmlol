@@ -183,7 +183,9 @@
 
             },
             methods: {
-
+                setnoticetxt(txt){
+                    this.noticetxt = txt
+                },
 
                 androidsave() {
                     this.savecanvas()

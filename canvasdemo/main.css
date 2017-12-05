@@ -107,6 +107,37 @@
     box-shadow: 0px 0px 10px 0px #dedede;
 }
 
+.pictureOperation {
+    background: white;
+    position: absolute;
+    left: 52px;
+    top: 226px;
+    padding: 0px;
+    width: 68px;
+    box-shadow: 0px 0px 10px 0px #dedede;
+}
+
+.pictureOperation>div {
+    width: 66px;
+    height: 27px;
+    font-size: 14px;
+    border: 1px solid #e6e6e6;
+    color: #333;
+    text-align: center;
+    line-height: 25px;
+}
+
+.pictureOperation>.nopicture {
+    width: 66px;
+    height: 27px;
+    font-size: 14px;
+    border: 1px solid #e6e6e6;
+    color: #969696;
+    text-align: center;
+    background: #efefef;
+    line-height: 25px;
+}
+
 .pensizeitem.itemx i {
     height: 0px;
 }
