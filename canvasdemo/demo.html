@@ -1,0 +1,761 @@
+﻿<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="maximum-scale=1, user-scalable=no" />
+    <title>Document</title>
+    <script src="./vue.min.js"></script>
+    <script src="./jquery.min.js"></script>
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+</head>
+
+<body>
+    <div id='app'>
+        <div class="appframe">
+            <div id="previewStraightLine" style="position:fixed;"></div>
+            <div class="appframecontent">
+                <div class="appframecontent-right">
+                    <!-- 滚动内容 -->
+                    <div class="sliderbar">
+                        <div class="sliderdot"></div>
+                    </div>
+                    <!-- 滚动内容 -->
+
+
+                    <!-- 功能选择 -->
+                    <div class="canvastool">
+                        <div class="controlarrows">
+                            <i class="fa fa-arrows"></i>
+                        </div>
+                        <div class="controlitem item-7" @click='dosomething(1)'></div>
+                        <div class="collapsetoll">
+
+                            <div class="penchoice" v-if='showchoosepensizecolor' @click='showchoosepensizecolor = false;'>
+                                <div class="titlex">
+                                    <span>颜色</span>
+                                    <i :style="'margin-bottom: -3px;background:'+pencolor"></i>
+                                </div>
+                                <div class="itemx coloritem">
+                                    <i v-for='i in 12' @click='choosepencolor(i)'></i>
+                                </div>
+                                <div class="titlex" style="padding-top: 6px;">
+                                    <span>粗细</span>
+                                    <i :style="'border-bottom:'+pensize+'px solid black;height:10px;margin-bottom: 6px;'"></i>
+                                </div>
+                                <div class="itemx pensizeitem">
+                                    <i v-for='i in 6' @click='choosepensize(i)'></i>
+                                </div>
+                            </div>
+                            <div class="noteblock" v-if='noticevisible'>
+                                <textarea name="" v-model='noticetxt' id="" cols="30" rows="10" style="margin: 0px; width: 271px; height: 153px;"></textarea>
+                            </div>
+                            <div class="controlitem item-4" @click='showchoosepensizecolor = !showchoosepensizecolor;'></div>
+
+                            <div v-if='(compositeOperate == "source-over" && straightLine == true ) || compositeOperate == "destination-out"' class="controlitem item-1"
+                                @click='i=>{compositeOperate = "source-over";straightLine = false;}'></div>
+                            <div v-if='compositeOperate == "source-over" && straightLine == false' class="controlitem item-1-on"></div>
+
+                            <div v-if='straightLine == false' class="controlitem item-2" @click='i=>{compositeOperate = "source-over";straightLine = true;}'></div>
+                            <div v-else class="controlitem item-2-on"></div>
+
+                            <div v-if='compositeOperate == "source-over"' class="controlitem item-3" @click='i=>{compositeOperate = "destination-out";straightLine = false;}'></div>
+                            <div v-else class="controlitem item-3-on"></div>
+                            <!-- <div class="controlitem item-4"></div> -->
+                            <!-- <div class="controlitem item-5"></div> -->
+                            <div class="controlitem item-9" @click='increaseCanvas'></div>
+                            <!--<div class="controlitem item-6" @click='dosomething(2)'></div>-->
+                            <!-- <div class="controlitem item-8" @click='dosomething(3)'></div> -->
+                        </div>
+
+                    </div>
+                    <!-- 功能选择 -->
+
+
+                    <!-- 绘图功能演示 -->
+                    <div class="questioncanvas" id="canvasspace">
+                        <img v-if='showkeys.key1 && anotherpicurl' class="anotherpicture" :src="anotherpicurl" alt="">
+                        <div id="main_content">
+                            <!--mainContent begin-->
+                            <div v-html='questionstring'>题目加载中。。。</div>
+                            <!--mainContent end-->
+                        </div>
+                    </div>
+                    <!-- 绘图功能演示 -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var app = new Vue({
+            el: '#app',
+            data: {
+                //显示画笔选择
+                showchoosepensizecolor: false,
+                //问题字符串
+                questionstring: '',
+                //画笔状态
+                //影藏显示key
+                showkeys: {
+                    key1: true,
+                    key2: true
+                },
+                //其他笔记
+                anotherpicurl: '',
+                //初始化笔记
+                notedata: "",
+                reserveIndex: 0,
+                cPushArray: [],
+                compositeOperate: 'source-over',
+                pensize: 1,
+                canvasstatus: '等待数据加载完整',
+                scrollnum: 0,
+                //直线
+                straightLine: false,
+                pencolor: '#000000',
+                noticevisible: false,
+                noticetxt: '',
+                canvasInitialHeight: 0
+            },
+            methods: {
+
+                setnoticetxt(txt) {
+                    this.noticetxt = txt
+                },
+
+                androidsave() {
+                    this.savecanvas()
+                    window.androidface.gethtmlcancas(this.notedata, document.querySelector('#main_content').offsetHeight,
+                        this.noticetxt)
+                },
+
+                //其他功能
+                dosomething(num) {
+                    switch (num) {
+                        case 1:
+                            $('.collapsetoll').toggle()
+                            break;
+                        case 2:
+                            this.picturevisible = !this.picturevisible
+                            break;
+                    }
+                },
+                //选择颜色
+                choosepencolor(i) {
+                    with(this) {
+                        switch (i) {
+                            case 1:
+                                pencolor = '#000000'
+                                break;
+                            case 2:
+                                pencolor = '#ff4e44'
+                                break;
+                            case 3:
+                                pencolor = '#3bc0ff'
+                                break;
+                            case 4:
+                                pencolor = '#ff9161'
+                                break;
+                            case 5:
+                                pencolor = '#db7bfc'
+                                break;
+                            case 6:
+                                pencolor = '#44e08d'
+                                break;
+                            case 7:
+                                pencolor = '#ffc200'
+                                break;
+                            case 8:
+                                pencolor = '#999999'
+                                break;
+                            case 9:
+                                pencolor = '#30d3b8'
+                                break;
+                            case 10:
+                                pencolor = '#2d94e7'
+                                break;
+                            case 11:
+                                pencolor = '#46b959'
+                                break;
+                            case 12:
+                                pencolor = '#fb8a8f'
+                                break;
+                        }
+                    }
+                },
+
+                //选择笔的大小
+                choosepensize(i) {
+                    with(this) {
+                        compositeOperate = "source-over"
+                        switch (i) {
+                            case 1:
+                                pensize = 1
+                                break;
+                            case 2:
+                                pensize = 3
+                                break;
+                            case 3:
+                                pensize = 4
+                                break;
+                            case 4:
+                                pensize = 5
+                                break;
+                            case 5:
+                                pensize = 6
+                                break;
+                            case 6:
+                                pensize = 7
+                                break;
+                        }
+                    }
+                },
+
+                //控制自己的canvas
+                switchself() {
+                    $('#canvas').toggle()
+                },
+
+                //加高canvas
+                increaseCanvas() {
+                    this.savecanvas()
+                    let questiondom = $('#main_content')
+                    questiondom.height(questiondom.height() + 500)
+                    let questionspacedom = document.querySelector('#canvasspace')
+                    questionspacedom.scrollTop = questionspacedom.scrollTop + 500
+                    this.initialcanvas('increase')
+                    let newscrolltopscale = Math.ceil((document.querySelector('#canvasspace').scrollTop / (
+                        document.querySelector(
+                            '#main_content').offsetHeight - document.querySelector('#canvasspace').offsetHeight
+                    )) * 100)
+                    document.querySelector('.sliderdot').style.top = newscrolltopscale + '%'
+                },
+
+                //滚动题干画图区域
+                questionscroll() {
+                    let questiondom = document.querySelector('#canvasspace')
+                    questiondom.scrollTop = (questiondom.scrollHeight - questiondom.offsetHeight + 4) * (
+                        this.scrollnum / 100)
+                    if (this.scrollnum == 1) {
+                        questiondom.scrollTop = 0
+                    }
+                },
+                savecanvas() {
+                    this.notedata = canvas.toDataURL()
+                },
+
+                initialcanvas(IsIncrease) {
+
+                    let isMobile = false
+                    if (window.navigator.appVersion.indexOf('iPad') > -1 | window.navigator.appVersion.indexOf(
+                            'iPhone') > -1 | window.navigator.appVersion.indexOf('Android') > -1) {
+                        isMobile = true
+                    }
+
+                    $('#canvas').remove()
+
+                    let previewStraightLineDom = $('#previewStraightLine')
+                    this.canvasstatus = '开始加载canvas'
+                    let excursionx = $('#canvasspace').offset().left + 2
+                    let excursiony = $('#canvasspace').offset().top
+                    let questionHeight = document.querySelector('#main_content').offsetHeight
+                    if (this.canvasInitialHeight !== 0) {
+                        let questiondom = $('#main_content')
+                        questiondom.height(this.canvasInitialHeight)
+                        questionHeight = this.canvasInitialHeight
+                    }
+                    document.querySelector('#canvasspace').appendChild($(
+                        `<canvas id="canvas" width="${910}" height="${questionHeight}px" style="box-sizing:border-box;position:absolute;left:0;top:0;z-index:2"></canvas>`
+                    )[0])
+                    var canvas = document.getElementById("canvas");
+                    var context = canvas.getContext("2d");
+                    let jscolor = document.querySelector('#jscolor')
+                    window.canvas = canvas
+                    window.context = context
+
+                    let paint = false
+                    let startpoint = [0, 0]
+                    let endpoint = [0, 0]
+                    let pagePoint = [0, 0]
+
+                    this.canvasstatus = '开始加载图像数据'
+                    if (!window.firstDraw) {
+                        var canvasPic = new Image()
+                        canvasPic.src = this.notedata
+                        canvasPic.onload = () => {
+                            context.globalCompositeOperation = 'source-over'
+                            context.clearRect(0, 0, canvas.width, canvas.height);
+                            window.context.drawImage(canvasPic, 0, 0);
+                            //初始化保存
+                            // this.savecanvas()
+                            //window.firstDraw = true
+                            this.canvasstatus = 'ok'
+
+                        }
+                        context.globalCompositeOperation = this.compositeOperate
+                    }
+
+                    if (IsIncrease === 'increase') {
+                        var canvasPic = new Image()
+                        canvasPic.src = this.notedata
+                        canvasPic.onload = () => {
+                            context.globalCompositeOperation = 'source-over'
+                            context.clearRect(0, 0, canvas.width, canvas.height);
+                            window.context.drawImage(canvasPic, 0, 0);
+                            this.canvasstatus = 'ok'
+                        }
+                        context.globalCompositeOperation = this.compositeOperate
+                    }
+
+                    canvas.addEventListener('touchstart', e => {
+                        window.isTouchMode = true
+                        window.isdotted = true
+
+                        let canvasscrollTOP = document.querySelector('#canvasspace').scrollTop
+
+                        pagePoint = [e.targetTouches[0].pageX, e.targetTouches[0].pageY]
+
+                        let relativepoint = [e.targetTouches[0].pageX - excursionx, e.targetTouches[
+                                0].pageY -
+                            excursiony + canvasscrollTOP
+                        ]
+                        paint = true
+                        startpoint = [relativepoint[0], relativepoint[1]]
+                        endpoint = [relativepoint[0], relativepoint[1]]
+
+
+                        if (this.straightLine) {
+                            previewStraightLineDom.css({
+                                'position': 'fixed',
+                                'z-index': 3,
+                                'border-top': '2px dotted gray',
+                                'height': '0px',
+                                'width': '0px',
+                                'left': e.targetTouches[0].pageX,
+                                'top': e.targetTouches[0].pageY
+                            })
+                        }
+
+                    })
+
+
+                    canvas.addEventListener('mousedown', e => {
+
+                        window.mousedownfirst = true
+
+                        if (window.isTouchMode) {
+                            return
+                        }
+
+                        window.isdotted = true
+
+                        let canvasscrollTOP = document.querySelector('#canvasspace').scrollTop
+
+                        pagePoint = [e.pageX, e.pageY]
+                        let relativepoint = [e.offsetX, e.offsetY]
+                        paint = true
+                        startpoint = [relativepoint[0], relativepoint[1]]
+                        endpoint = [relativepoint[0], relativepoint[1]]
+
+                        if (this.straightLine) {
+                            previewStraightLineDom.css({
+                                'position': 'fixed',
+                                'z-index': 3,
+                                'border-top': '2px dotted gray',
+                                'height': '0px',
+                                'width': '0px',
+                                'left': e.pageX,
+                                'top': e.pageY
+                            })
+                        }
+
+                    })
+
+
+                    canvas.addEventListener('touchend', e => {
+
+                        setTimeout(i => {
+                            window.isTouchMode = false;
+                        }, 10)
+
+                        paint = false
+
+
+                        var canvas = document.getElementById("canvas");
+                        var context = canvas.getContext("2d");
+                        if (this.straightLine) {
+                            context.stroke();
+                        }
+
+                        previewStraightLineDom.css({
+                            'width': '0',
+                        })
+
+                        //打点
+                        if (window.isdotted) {
+                            context.beginPath()
+                            context.globalCompositeOperation = this.compositeOperate
+                            context.fillStyle = this.pencolor
+                            if (this.compositeOperate == 'destination-out') {
+                                context.arc(endpoint[0], endpoint[1], 24, 0, 2 * Math.PI);
+                            } else {
+                                context.arc(endpoint[0], endpoint[1], this.pensize, 0, 2 * Math.PI);
+                            }
+                            context.fill();
+                        }
+
+                    })
+
+                    canvas.addEventListener('mouseup', e => {
+                        if (window.isTouchMode) {
+                            return
+                        }
+
+                        paint = false
+                        var canvas = document.getElementById("canvas");
+                        var context = canvas.getContext("2d");
+                        if (this.straightLine) {
+                            context.stroke();
+                        }
+
+                        previewStraightLineDom.css({
+                            'width': '0',
+                        })
+                        //打点
+                        if (window.isdotted) {
+                            context.beginPath()
+                            context.globalCompositeOperation = this.compositeOperate
+                            context.fillStyle = this.pencolor
+                            if (this.compositeOperate == 'destination-out') {
+
+                                context.arc(endpoint[0], endpoint[1], 24, 0, 2 * Math.PI);
+                            } else {
+
+                                context.arc(endpoint[0], endpoint[1], this.pensize, 0, 2 * Math.PI);
+                            }
+                            context.fill();
+                        }
+                    })
+
+                    canvas.addEventListener('touchmove', e => {
+
+
+                        if (!paint) {
+                            return
+                        }
+
+                        window.isdotted = false
+
+                        let newPagePoint = [e.targetTouches[0].pageX, e.targetTouches[0].pageY]
+                        let canvasscrollTOP = document.querySelector('#canvasspace').scrollTop
+                        let relativepoint = [e.targetTouches[0].pageX - excursionx, e.targetTouches[
+                                0].pageY -
+                            excursiony + canvasscrollTOP
+                        ]
+                        if (this.straightLine) {
+                            //pass
+                        } else {
+                            startpoint = endpoint
+                        }
+                        endpoint = [relativepoint[0], relativepoint[1]]
+                        //设置对象起始点和终点
+                        context.beginPath()
+                        context.globalCompositeOperation = this.compositeOperate //source-over
+                        context.moveTo(startpoint[0], startpoint[1]);
+                        context.lineTo(endpoint[0], endpoint[1]);
+                        //设置样式
+                        context.lineCap = 'round'
+                        context.lineJoin = "round";
+                        if (this.compositeOperate == 'destination-out') {
+                            context.lineWidth = 24;
+
+                        } else {
+                            context.lineWidth = this.pensize;
+
+                        }
+
+                        context.strokeStyle = this.pencolor;
+                        //绘制
+
+                        if (this.straightLine) {
+                            let sideA = newPagePoint[0] - pagePoint[0]
+                            let sideB = newPagePoint[1] - pagePoint[1]
+                            let sideC = Math.sqrt(sideA * sideA + sideB * sideB)
+                            let anglex = this.getAngle(pagePoint[0], pagePoint[1], newPagePoint[0],
+                                newPagePoint[1])
+                            previewStraightLineDom.css({
+                                'width': sideC + 'px',
+                                'transform-origin': '0% 0%',
+                                'transform': 'rotate(' + anglex + 'deg)'
+                            })
+
+                        } else {
+                            context.stroke();
+                        }
+
+                    })
+
+
+                    canvas.addEventListener('mousemove', e => {
+                        if (window.isTouchMode) {
+                            return
+                        }
+                        if (!paint) {
+                            return
+                        }
+                        if (window.mousedownfirst) {
+                            window.mousedownfirst = false
+                            return
+                        }
+
+                        window.isdotted = false
+
+                        let newPagePoint = [e.pageX, e.pageY]
+                        let canvasscrollTOP = document.querySelector('#canvasspace').scrollTop
+                        let relativepoint = [e.offsetX, e.offsetY]
+                        if (this.straightLine) {
+                            //pass
+                        } else {
+                            startpoint = endpoint
+                        }
+                        endpoint = [relativepoint[0], relativepoint[1]]
+                        //设置对象起始点和终点
+                        context.beginPath()
+                        context.globalCompositeOperation = this.compositeOperate //source-over
+                        context.moveTo(startpoint[0], startpoint[1]);
+                        context.lineTo(endpoint[0], endpoint[1]);
+                        //设置样式
+                        context.lineCap = 'round'
+                        context.lineJoin = "round";
+                        if (this.compositeOperate == 'destination-out') {
+                            context.lineWidth = 24;
+
+                        } else {
+                            context.lineWidth = this.pensize;
+
+                        }
+
+                        context.fillStyle = this.pencolor;
+                        context.strokeStyle = this.pencolor;
+                        //绘制
+
+                        if (this.straightLine) {
+                            let sideA = newPagePoint[0] - pagePoint[0]
+                            let sideB = newPagePoint[1] - pagePoint[1]
+                            let sideC = Math.sqrt(sideA * sideA + sideB * sideB)
+                            let anglex = this.getAngle(pagePoint[0], pagePoint[1], newPagePoint[0],
+                                newPagePoint[1])
+                            previewStraightLineDom.css({
+                                'width': sideC - 5 + 'px',
+                                'transform-origin': '0% 0%',
+                                'transform': 'rotate(' + anglex + 'deg)'
+                            })
+
+                        } else {
+                            context.stroke();
+                        }
+
+
+                    })
+                },
+
+                //获取角度
+                getAngle(px, py, mx, my) { //获得人物中心和鼠标坐标连线，与y轴正半轴之间的夹角
+                    var x = Math.abs(px - mx);
+                    var y = Math.abs(py - my);
+                    var z = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
+                    var cos = y / z;
+                    var radina = Math.acos(cos); //用反三角函数求弧度
+                    var angle = Math.floor(180 / (Math.PI / radina)); //将弧度转换成角度
+
+                    if (mx > px && my > py) { //鼠标在第四象限
+                        angle = 180 - angle;
+                    }
+
+                    if (mx == px && my > py) { //鼠标在y轴负方向上
+                        angle = 180;
+                    }
+
+                    if (mx > px && my == py) { //鼠标在x轴正方向上
+                        angle = 90;
+                    }
+
+                    if (mx < px && my > py) { //鼠标在第三象限
+                        angle = 180 + angle;
+                    }
+
+                    if (mx < px && my == py) { //鼠标在x轴负方向
+                        angle = 270;
+                    }
+
+                    if (mx < px && my < py) { //鼠标在第二象限
+                        angle = 360 - angle;
+                    }
+
+                    return angle - 90;
+                },
+                buildcanvas(question, notedata) {
+                    this.questionstring = question
+                    this.notedata = notedata
+                    setTimeout(this.initialcanvas, 150)
+                }
+            },
+            mounted() {
+
+                let sidertouch = false
+                let sideroldpagey = 0;
+                let maxslidertop = $('.sliderbar').height() - 15
+
+                //滚动内容
+                $('.sliderdot').on('mousedown', e => {
+                    sidertouch = true
+                    sideroldpagey = e.pageY
+                })
+                $('body').on('mouseup', e => {
+                    sidertouch = false
+                })
+                $('body').on('mousemove', e => {
+                    if (sidertouch) {
+                        let gap = e.pageY - sideroldpagey
+                        let oldoffsettop = $('.sliderdot')[0].offsetTop
+                        let newoffsettop = oldoffsettop + gap
+
+                        console.log(newoffsettop)
+
+                        if (newoffsettop <= -10) {
+                            newoffsettop = -10
+                        } else if (newoffsettop >= maxslidertop) {
+                            newoffsettop = maxslidertop
+                        }
+                        $('.sliderdot').css({
+                            'top': newoffsettop
+                        })
+
+                        if (newoffsettop <= 5) {
+                            this.scrollnum = 0;
+                        } else if (this.scrollnum > 96) {
+                            this.scrollnum = 100
+                        } else {
+                            this.scrollnum = Math.ceil((newoffsettop / maxslidertop) * 100)
+                        }
+
+                        sideroldpagey = e.pageY
+                        this.questionscroll()
+                    }
+                })
+
+
+                $('.sliderdot').on('touchstart', e => {
+                    sidertouch = true
+                    sideroldpagey = e.targetTouches[0].pageY
+                })
+                $('body').on('touchend', e => {
+                    sidertouch = false
+                })
+                $('body').on('touchmove', e => {
+                    if (sidertouch) {
+                        let gap = e.targetTouches[0].pageY - sideroldpagey
+                        let oldoffsettop = $('.sliderdot')[0].offsetTop
+                        let newoffsettop = oldoffsettop + gap
+
+                        if (newoffsettop <= -10) {
+                            newoffsettop = -10
+                        } else if (newoffsettop >= maxslidertop) {
+                            newoffsettop = maxslidertop
+                        }
+                        $('.sliderdot').css({
+                            'top': newoffsettop
+                        })
+
+                        if (newoffsettop <= 5) {
+                            this.scrollnum = 0;
+                        } else if (this.scrollnum > 96) {
+                            this.scrollnum = 100
+                        } else {
+                            this.scrollnum = Math.ceil((newoffsettop / maxslidertop) * 100)
+                        }
+
+                        sideroldpagey = e.targetTouches[0].pageY
+                        this.questionscroll()
+                    }
+                })
+
+                window.canvasdom = this
+                window.canvasdom.buildcanvas('<i>hjaja</i></br>sdf', '')
+
+                //阻止问题区域滚动
+                $('#canvasspace').on('touchmove', function (event) {
+                    event.preventDefault();
+                });
+
+                //问题加载好后开始加载canvas
+
+
+                let canvastool = document.querySelector('.canvastool')
+                let appframe = document.querySelector('.appframe')
+                let movetoollock = false
+                let movetoolstart = []
+                let movetoolend = []
+
+
+                canvastool.addEventListener('mousedown', e => {
+                    movetoollock = true
+
+                    let point = [e.pageX, e.pageY]
+                    movetoolstart = point
+                    movetoolend = point
+                })
+                appframe.addEventListener('mouseup', e => {
+                    let point = [e.pageX, e.pageY]
+                    movetoollock = false
+
+                })
+                appframe.addEventListener('mousemove', e => {
+                    if (movetoollock === true) {
+                        let point = [e.pageX, e.pageY]
+                        movetoolstart = movetoolend
+                        movetoolend = point
+                        let oldleft = canvastool.offsetLeft
+                        let oldtop = canvastool.offsetTop
+                        $(canvastool).css({
+                            'left': oldleft + (movetoolend[0] - movetoolstart[0]),
+                            'top': oldtop + (movetoolend[1] - movetoolstart[1])
+                        })
+                    }
+                })
+
+
+                canvastool.addEventListener('touchstart', e => {
+                    movetoollock = true
+
+                    let point = [e.targetTouches[0].pageX, e.targetTouches[0].pageY]
+                    movetoolstart = point
+                    movetoolend = point
+                })
+                appframe.addEventListener('touchend', e => {
+                    let point = [e.changedTouches[0].pageX, e.changedTouches[0].pageY]
+                    movetoollock = false
+
+                })
+                appframe.addEventListener('touchmove', e => {
+                    if (movetoollock === true) {
+                        let point = [e.targetTouches[0].pageX, e.targetTouches[0].pageY]
+                        movetoolstart = movetoolend
+                        movetoolend = point
+                        let oldleft = canvastool.offsetLeft
+                        let oldtop = canvastool.offsetTop
+                        $(canvastool).css({
+                            'left': oldleft + (movetoolend[0] - movetoolstart[0]),
+                            'top': oldtop + (movetoolend[1] - movetoolstart[1])
+                        })
+                    }
+                })
+
+            }
+        })
+    </script>
+
+</body>
+
+</html>
