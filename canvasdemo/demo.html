@@ -25,13 +25,15 @@
 
                     <!-- 功能选择 -->
                     <div class="canvastool">
-                        <div class="controlarrows">
+                        <div class="controlitem">
                             <i class="fa fa-arrows"></i>
                         </div>
-                        <div class="controlitem item-7" @click='dosomething(1)'></div>
+                        <div class="controlitem item-7" @click='dosomething(1)'>
+                            <i class="fa fa-arrows"></i>
+                        </div>
                         <div class="collapsetoll">
 
-                            <div class="penchoice" v-if='showchoosepensizecolor' @click='showchoosepensizecolor = false;'>
+                            <div class="penchoice" style="top: 99px;" v-if='showchoosepensizecolor' @click='showchoosepensizecolor = false;'>
                                 <div class="titlex">
                                     <span>颜色</span>
                                     <i :style="'margin-bottom: -3px;background:'+pencolor"></i>
@@ -39,6 +41,12 @@
                                 <div class="itemx coloritem">
                                     <i v-for='i in 12' @click='choosepencolor(i)'></i>
                                 </div>
+                            </div>
+                            <div class="controlitem item-4" @click='showchoosepensizecolor = !showchoosepensizecolor;'>
+                                <i class="fa fa-arrows"></i>
+                            </div>
+
+                            <div class="penchoice" style="top: 149px;"  v-if='showchoosepensize' @click='showchoosepensize = false;'>
                                 <div class="titlex" style="padding-top: 6px;">
                                     <span>粗细</span>
                                     <i :style="'border-bottom:'+pensize+'px solid black;height:10px;margin-bottom: 6px;'"></i>
@@ -47,25 +55,21 @@
                                     <i v-for='i in 6' @click='choosepensize(i)'></i>
                                 </div>
                             </div>
-                            <div class="noteblock" v-if='noticevisible'>
-                                <textarea name="" v-model='noticetxt' id="" cols="30" rows="10" style="margin: 0px; width: 271px; height: 153px;"></textarea>
+                            <div class="controlitem item-4" @click='showchoosepensize = !showchoosepensize;'>
+                                <i class="fa fa-arrows"></i>
                             </div>
-                            <div class="controlitem item-4" @click='showchoosepensizecolor = !showchoosepensizecolor;'></div>
 
                             <div v-if='(compositeOperate == "source-over" && straightLine == true ) || compositeOperate == "destination-out"' class="controlitem item-1"
-                                @click='i=>{compositeOperate = "source-over";straightLine = false;}'></div>
-                            <div v-if='compositeOperate == "source-over" && straightLine == false' class="controlitem item-1-on"></div>
+                                @click='i=>{compositeOperate = "source-over";straightLine = false;}'><i class="fa fa-arrows"></i></div>
+                            <div v-if='compositeOperate == "source-over" && straightLine == false' class="controlitem item-on"><i class="fa fa-arrows"></i></div>
 
-                            <div v-if='straightLine == false' class="controlitem item-2" @click='i=>{compositeOperate = "source-over";straightLine = true;}'></div>
-                            <div v-else class="controlitem item-2-on"></div>
+                            <div v-if='straightLine == false' class="controlitem item-2" @click='i=>{compositeOperate = "source-over";straightLine = true;}'><i class="fa fa-arrows"></i></div>
+                            <div v-else class="controlitem item-on"><i class="fa fa-arrows"></i></div>
 
-                            <div v-if='compositeOperate == "source-over"' class="controlitem item-3" @click='i=>{compositeOperate = "destination-out";straightLine = false;}'></div>
-                            <div v-else class="controlitem item-3-on"></div>
-                            <!-- <div class="controlitem item-4"></div> -->
-                            <!-- <div class="controlitem item-5"></div> -->
-                            <div class="controlitem item-9" @click='increaseCanvas'></div>
-                            <!--<div class="controlitem item-6" @click='dosomething(2)'></div>-->
-                            <!-- <div class="controlitem item-8" @click='dosomething(3)'></div> -->
+                            <div v-if='compositeOperate == "source-over"' class="controlitem item-3" @click='i=>{compositeOperate = "destination-out";straightLine = false;}'><i class="fa fa-arrows"></i></div>
+                            <div v-else class="controlitem item-on"><i class="fa fa-arrows"></i></div>
+                            <div class="controlitem item-9" @click='increaseCanvas'><i class="fa fa-arrows"></i></div>
+
                         </div>
 
                     </div>
@@ -91,6 +95,8 @@
         var app = new Vue({
             el: '#app',
             data: {
+                //画笔粗细
+                showchoosepensize:false,
                 //显示画笔选择
                 showchoosepensizecolor: false,
                 //问题字符串
@@ -240,6 +246,8 @@
                     if (this.scrollnum == 1) {
                         questiondom.scrollTop = 0
                     }
+
+
                 },
                 savecanvas() {
                     this.notedata = canvas.toDataURL()
@@ -621,7 +629,6 @@
                         let oldoffsettop = $('.sliderdot')[0].offsetTop
                         let newoffsettop = oldoffsettop + gap
 
-                        console.log(newoffsettop)
 
                         if (newoffsettop <= -10) {
                             newoffsettop = -10
@@ -634,7 +641,7 @@
 
                         if (newoffsettop <= 5) {
                             this.scrollnum = 0;
-                        } else if (this.scrollnum > 96) {
+                        } else if (newoffsettop > maxslidertop) {
                             this.scrollnum = 100
                         } else {
                             this.scrollnum = Math.ceil((newoffsettop / maxslidertop) * 100)
@@ -670,7 +677,7 @@
 
                         if (newoffsettop <= 5) {
                             this.scrollnum = 0;
-                        } else if (this.scrollnum > 96) {
+                        } else if (newoffsettop > maxslidertop) {
                             this.scrollnum = 100
                         } else {
                             this.scrollnum = Math.ceil((newoffsettop / maxslidertop) * 100)
@@ -682,7 +689,7 @@
                 })
 
                 window.canvasdom = this
-                window.canvasdom.buildcanvas('<i>hjaja</i></br>sdf', '')
+                // window.canvasdom.buildcanvas('<i>hjaja</i></br>sdf', '')
 
                 //阻止问题区域滚动
                 $('#canvasspace').on('touchmove', function (event) {
