@@ -26,10 +26,11 @@
                     <!-- 功能选择 -->
                     <div class="canvastool">
                         <div class="controlitem">
-                            <i class="fa fa-arrows"></i>
+                            <i class="icon-icon_drag"></i>
                         </div>
                         <div class="controlitem item-7" @click='dosomething(1)'>
-                            <i class="fa fa-arrows"></i>
+                            <i v-if='icon_shrinkage == false' class="icon-icon_shrinkage"></i>
+                            <i v-else class="icon-icon_shrinkage2"></i>
                         </div>
                         <div class="collapsetoll">
 
@@ -43,9 +44,9 @@
                                 </div>
                             </div>
                             <div class="controlitem item-4" @click='showchoosepensizecolor = !showchoosepensizecolor;'>
-                                <i class="fa fa-arrows"></i>
+                                <i class="icon-icon_-color" :style='{color:pencolor}'></i>
                             </div>
-
+    
                             <div class="penchoice" style="top: 149px;"  v-if='showchoosepensize' @click='showchoosepensize = false;'>
                                 <div class="titlex" style="padding-top: 6px;">
                                     <span>粗细</span>
@@ -56,19 +57,19 @@
                                 </div>
                             </div>
                             <div class="controlitem item-4" @click='showchoosepensize = !showchoosepensize;'>
-                                <i class="fa fa-arrows"></i>
+                                <i class="icon-icon_thick"></i>
                             </div>
 
                             <div v-if='(compositeOperate == "source-over" && straightLine == true ) || compositeOperate == "destination-out"' class="controlitem item-1"
-                                @click='i=>{compositeOperate = "source-over";straightLine = false;}'><i class="fa fa-arrows"></i></div>
-                            <div v-if='compositeOperate == "source-over" && straightLine == false' class="controlitem item-on"><i class="fa fa-arrows"></i></div>
+                                @click='i=>{compositeOperate = "source-over";straightLine = false;}'><i class="icon-icon_pen"></i></div>
+                            <div v-if='compositeOperate == "source-over" && straightLine == false' class="controlitem item-on"><i class="icon-icon_pen"></i></div>
 
-                            <div v-if='straightLine == false' class="controlitem item-2" @click='i=>{compositeOperate = "source-over";straightLine = true;}'><i class="fa fa-arrows"></i></div>
-                            <div v-else class="controlitem item-on"><i class="fa fa-arrows"></i></div>
+                            <div v-if='straightLine == false' class="controlitem item-2" @click='i=>{compositeOperate = "source-over";straightLine = true;}'><i class="icon-icon_-line"></i></div>
+                            <div v-else class="controlitem item-on"><i class="icon-icon_-line"></i></div>
 
-                            <div v-if='compositeOperate == "source-over"' class="controlitem item-3" @click='i=>{compositeOperate = "destination-out";straightLine = false;}'><i class="fa fa-arrows"></i></div>
-                            <div v-else class="controlitem item-on"><i class="fa fa-arrows"></i></div>
-                            <div class="controlitem item-9" @click='increaseCanvas'><i class="fa fa-arrows"></i></div>
+                            <div v-if='compositeOperate == "source-over"' class="controlitem item-3" @click='i=>{compositeOperate = "destination-out";straightLine = false;}'><i class="icon-icon_rubber"></i></div>
+                            <div v-else class="controlitem item-on"><i class="icon-icon_rubber"></i></div>
+                            <div class="controlitem item-9" @click='increaseCanvas'><i class="icon-icon_addpage"></i></div>
 
                         </div>
 
@@ -95,6 +96,8 @@
         var app = new Vue({
             el: '#app',
             data: {
+                //展开图标
+                icon_shrinkage:false,
                 //画笔粗细
                 showchoosepensize:false,
                 //显示画笔选择
@@ -141,6 +144,7 @@
                     switch (num) {
                         case 1:
                             $('.collapsetoll').toggle()
+                            this.icon_shrinkage = !this.icon_shrinkage
                             break;
                         case 2:
                             this.picturevisible = !this.picturevisible
