@@ -460,15 +460,15 @@
 }
 
 .questioncanvas {
-    width: 910px;
-    /* box-shadow: 0px 0px 16px 0px grey; */
-    background: white;
-    box-sizing: border-box;
-    margin-left: 10px;
-    height: 97%;
-    margin-top: 1%;
-    overflow: hidden;
-    position: relative;
+  width: 890px;
+  box-shadow: 0px 0px 24px 0px #d2dad7;
+  background: white;
+  box-sizing: border-box;
+  margin-left: calc(50% - 445px);
+  height: 97%;
+  margin-top: 1%;
+  overflow: hidden;
+  position: relative;
 }
 
 * {
@@ -489,8 +489,8 @@
 
 .canvastool {
     position: absolute;
-    left: 10px;
-    top: 20%;
+    left: calc(50% - 446px);
+    top: calc(50% - 198px);
     border: 2px solid #eeeeee;
     /* box-shadow: 0px 0px 10px 0px #dedede; */
     z-index: 3;
@@ -687,7 +687,7 @@
     height: 36%;
     position: absolute;
     top: 33%;
-    left: 950px;
+    left: calc(50% + 467px);
     width: 8px;
     border-radius: 5px;
     background: #c8eadf;
